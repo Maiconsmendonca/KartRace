@@ -41,13 +41,6 @@
 - [x] List how long each driver arrived after first place
 - [x] List all race information
 
-## Functions and modifications to be made
-
-- [x] Separate every project into classes
-- [x] Insert Repositories and create validation rules and queries
-- [x] Creation of endpoints
-- [x] Validation of pilot data
-
 ## How to run the project
 
 ```bash
@@ -80,3 +73,10 @@ $ composer install
 ## Author
 ### Maicon Mendonca
 * [Linkedin]()
+
+## Next Steps
+
+- [ ] Separate every project into classes
+- [ ] Insert Repositories and create validation rules and queries
+- [ ] Creation of endpoints
+- [ ] Validation of pilot data
