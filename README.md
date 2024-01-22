@@ -1,13 +1,13 @@
 # Project Kart Race
 
 ## ìndice
-- <a href="requirements">Project Requirements</a>
-- <a href="functionalities">Project Features</a>
-- <a href="running">How to run the project</a>
-- <a href="access">How to access APi Routes and Endpoints</a>
-- <a href="technologies">Technologies used</a>
-- <a href="author">Author</a>
-- <a href="steps">Next Steps</a>
+- <a href="#requirements">Project Requirements</a>
+- <a href="#functionalities">Project Features</a>
+- <a href="#running">How to run the project</a>
+- <a href="#access">How to access APi Routes and Endpoints</a>
+- <a href="#technologies">Technologies used</a>
+- <a href="#author">Author</a>
+- <a href="#steps">Next Steps</a>
 
 ## Project Requirements
 
