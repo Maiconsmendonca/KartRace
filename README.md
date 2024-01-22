@@ -9,6 +9,9 @@
 - <a href="#deadline-for-project-delivery">Deadline for project delivery</a>
 - <a href="#author">Author</a>
 - <a href="#next-steps">Next Steps</a>
+- <a href="#extra-information">Extra information</a>
+
+___
 
 ## Project Requirements
 
@@ -32,6 +35,8 @@
   * Display the average speed of each driver during the race
   * Display how long each driver arrived after the winner
 
+___
+
 ## Project Features
 
 - [x] Import log file
@@ -41,6 +46,8 @@
 - [x] List average speed of each driver
 - [x] List how long each driver arrived after first place
 - [x] List all race information
+
+___
 
 ## How to run the project
 
@@ -56,10 +63,14 @@ $ npm install
 $ composer install
 ```
 
+___
+
 ## How to access APi Routes and Endpoints
 
 ```
 ```
+
+___
 
 ## Technologies used
 
@@ -68,12 +79,18 @@ $ composer install
 3. [Composer](https://getcomposer.org/)
 4. [Docker](https://www.docker.com/)
 
+___
+
 # Deadline for project delivery
    # 23/01/2024 
+
+___
 
 ## Author
 ### Maicon Mendonca
 * [Linkedin]()
+
+___
 
 ## Next Steps
 
@@ -81,3 +98,9 @@ $ composer install
 - [ ] Insert Repositories and create validation rules and queries
 - [ ] Creation of endpoints
 - [ ] Validation of pilot data
+
+___
+
+## **Extra information**
+
+{c:red} There is a class in the project which is called fileImporControllerOld.php this class is a class that was created only to think and develop the logic of the project, it is not the final class nor the finished project, the project is being developed from this logic. {/c}
