@@ -111,7 +111,6 @@ ___
 
 ## Next Steps
 
-- [ ] Separate every project into classes
 - [ ] Insert Repositories and create validation rules and queries
 - [ ] Creation of endpoints
 - [ ] Validation of pilot data
