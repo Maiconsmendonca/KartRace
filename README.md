@@ -46,6 +46,7 @@ ___
 - [x] List average speed of each driver
 - [x] List how long each driver arrived after first place
 - [x] List all race information
+- [x] Separate every project into classes
 
 ___
 
