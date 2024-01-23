@@ -68,6 +68,23 @@ ___
 ## How to access APi Routes and Endpoints
 
 ```
+    // Input the .log file
+    {{BASE_URL}}/api/process-log
+    
+    // Check the race result
+    {{BASE_URL}}/api/race-results
+    
+    // Each driver's best lap
+    {{BASE_URL}}/api/best-lap-for-each-pilot
+    
+    // Each rider's best time
+    {{BASE_URL}}/api/average-speed-for-each-pilot
+    
+    // The time each driver arrived after first place
+    {{BASE_URL}}/api/time-difference-from-winner-for-each-pilot
+    
+    // All driver and race information
+    {{BASE_URL}}/api/all-race-information
 ```
 
 ___

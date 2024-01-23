@@ -11,16 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('race_infos', function (Blueprint $table) {
+        Schema::create('pilotos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pilot_id')
-                ->unique()
-                ->constrained('pilot_infos')
-                ->onDelete('cascade');
-
-            $table->integer('finishing_position');
-            $table->integer('laps_completed');
-            $table->integer('total_time');
+            $table->string('codigo');
+            $table->string('nomePiloto');
             $table->timestamps();
         });
     }
@@ -30,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('race_info');
+        Schema::dropIfExists('pilotos');
     }
 };

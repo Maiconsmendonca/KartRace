@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\FileImportController;
+use App\Http\Controllers\fileImportControllerold;
+use App\Http\Controllers\RaceResultController;
+use App\Http\Controllers\StatisticsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,8 +18,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('/process-log', [FileImportController::class, 'processLog']);
 
-Route::post('upload', [FileImportController::class, 'uploadtFile']);
+Route::get('/race-results', [RaceResultController::class, 'index']);
+
+Route::get('/best-lap-for-each-pilot', [StatisticsController::class, 'bestLapForEachPilot']);
+Route::get('/best-lap-of-the-race', [StatisticsController::class, 'bestLapOfTheRace']);
+Route::get('/average-speed-for-each-pilot', [StatisticsController::class, 'averageSpeedForEachPilot']);
+Route::get('/time-difference-from-winner-for-each-pilot', [StatisticsController::class, 'timeDifferenceFromWinnerForEachPilot']);
+Route::get('/all-race-information', [StatisticsController::class, 'allRaceInformation']);
