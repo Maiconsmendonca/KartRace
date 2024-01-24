@@ -15,7 +15,7 @@ class RaceResult extends Model
      * @var string[]
      */
     protected $fillable = [
-        'pilot_id', 'lapsCompleted', 'totalTime', 'finishingPosition', 'averageSpeed'
+        'pilot_id', 'lapsCompleted', 'totalTime', 'finishingPosition', 'averageSpeed', 'lastLapTime'
     ];
 
     /**

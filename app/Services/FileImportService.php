@@ -61,9 +61,15 @@ class FileImportService
             'lapsCompleted' => $lap,
             'totalTime' => 0,
             'finishingPosition' => 0,
+            'lastLapTime' => 0
+
         ]);
 
         $lastLap = Lap::where('race_results_id', $raceResult->id)->orderBy('number', 'desc')->first();
+
+        $lastLapTime = $this->timeForSeconds($data['lapTime']);
+        $raceResult->lastLapTime = $lastLapTime;
+        $raceResult->save();
 
         $newLapNumber = $lastLap ? $lastLap->number + 1 : 1;
 
@@ -84,6 +90,38 @@ class FileImportService
 
         $raceResult->lapsCompleted = $newLapNumber;
         $raceResult->save();
+
+        $allPilots = Pilot::all();
+
+        $lastLaps = Lap::where('number', 4)->get(); // Supondo que a última volta seja a volta 4
+
+        $position = 1;
+
+        foreach ($lastLaps as $lap) {
+            $raceResult = RaceResult::where('id', $lap->race_results_id)->first();
+
+            $raceResult->finishingPosition = $position;
+            $raceResult->save();
+
+            $position++;
+        }
+
+        foreach ($allPilots as $pilot) {
+            $raceResult = RaceResult::firstOrCreate(['pilot_id' => $pilot->id], [
+                'pilot_id' => $pilot->id,
+                'lapsCompleted' => 0,
+                'totalTime' => 0,
+                'finishingPosition' => 0,
+            ]);
+
+            if (!$lastLaps->contains('race_results_id', $raceResult->id)) {
+                $raceResult->finishingPosition = $position;
+                $raceResult->save();
+
+                $position++;
+            }
+        }
+
     }
 
     /**
