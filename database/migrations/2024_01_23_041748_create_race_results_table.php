@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('pilot_id')->references('id')->on('pilots');
 
             $table->integer('lapsCompleted');
-            $table->float('totalTime');
+            $table->integer('totalTime');
             $table->integer('finishingPosition')->nullable();
 
             $table->timestamps();

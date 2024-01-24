@@ -50,7 +50,7 @@ class RaceResultService
                         'codigoPiloto' => $result['codigo'],
                         'nomePiloto' => $result['nomePiloto'],
                         'voltasCompletadas' => $result['voltasCompletadas'],
-                        'tempoTotal' => $result['tempoTotal'],
+                        'tempoTotal' => convert_milessimos_to_mm_ss_nnn($result['tempoTotal']),
                         'voltas' => $this->prepareVoltaData($result),
                     ];
 
