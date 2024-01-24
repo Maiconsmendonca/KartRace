@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FileImportController;
 use App\Http\Controllers\fileImportControllerold;
+use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,3 +23,6 @@ Route::get('/', function () {
 Route::get('/log', [fileImportControllerold::class, 'processarLog']);
 
 Route::get('/file_import', [FileImportController::class, 'importFile']);
+
+Route::get('/best-lap-for-each-pilot', [StatisticsController::class, 'bestLapForEachPilot']);
+

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FileImportController;
 use App\Http\Controllers\fileImportControllerold;
+use App\Http\Controllers\PilotController;
 use App\Http\Controllers\RaceResultController;
 use App\Http\Controllers\StatisticsController;
 use Illuminate\Http\Request;
@@ -19,6 +20,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/process-log', [FileImportController::class, 'processLog']);
+
+Route::get('/pilot-results', [PilotController::class, 'index']);
 
 Route::get('/race-results', [RaceResultController::class, 'index']);
 

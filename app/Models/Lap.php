@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class responsible for race results
@@ -15,7 +16,7 @@ class Lap extends Model
      * @var string[]
      */
     protected $fillable = [
-        'numero', 'horavolta', 'tempoVolta', 'velocidadeMedia', 'piloto_id'
+        'number', 'lapHour', 'lapTime', 'averageSpeed', 'race_results_id'
     ];
 
     /**
@@ -23,6 +24,6 @@ class Lap extends Model
      */
     public function raceResult(): BelongsTo
     {
-        return $this->belongsTo(RaceResult::class);
+        return $this->belongsTo(RaceResult::class, 'race_results_id');
     }
 }

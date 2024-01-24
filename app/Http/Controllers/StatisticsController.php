@@ -32,4 +32,31 @@ class StatisticsController extends Controller
 
         return response()->json($allRaceInformation);
     }
+
+    public function bestLapOfTheRace(): JsonResponse
+    {
+        $allRaceInformation = $this->statisticsService->getBestLapOfTheRace();
+
+        return response()->json($allRaceInformation);
+    }
+
+    public function bestLapForEachPilot()
+    {
+        try {
+            $raceResults = $this->statisticsService->getBestLapForEachPilot();
+
+            $formattedResults = $this->formatResults($raceResults);
+
+            return response()->json($formattedResults, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    protected function formatResults($raceResults): array
+    {
+        return [
+            'resultados' => $raceResults,
+        ];
+    }
 }

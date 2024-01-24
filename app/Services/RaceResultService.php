@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Lap;
+use App\Models\Pilot;
 use App\Models\RaceResult;
 use App\Repository\RaceResultRepository;
 
@@ -28,7 +30,7 @@ class RaceResultService
      */
     public function getRaceResults(): mixed
     {
-        return $this->raceResultRepository->getAll();
+        return $this->prepareRaceResultsForDisplay();
     }
 
     /**
@@ -37,21 +39,23 @@ class RaceResultService
     public function prepareRaceResultsForDisplay(): ?array
     {
         try {
-            $raceResults = RaceResult::with('piloto', 'voltas')->get();
+            $raceResults = $this->raceResultRepository->getAll();
 
             $preparedResults = [];
 
-            foreach ($raceResults as $result) {
-                $preparedResult = [
-                    'posicaoChegada' => $result->posicaoChegada,
-                    'codigoPiloto' => $result->piloto->codigo,
-                    'nomePiloto' => $result->piloto->nomePiloto,
-                    'voltasCompletadas' => $result->voltasCompletadas,
-                    'tempoTotal' => $result->tempoTotal,
-                    'voltas' => $this->prepareVoltaData($result->voltas),
-                ];
+            foreach ($raceResults['resultados'] as $result) {
+                if ($result) {
+                    $preparedResult = [
+                        'posicaoChegada' => $result['posicaoChegada'],
+                        'codigoPiloto' => $result['codigo'],
+                        'nomePiloto' => $result['nomePiloto'],
+                        'voltasCompletadas' => $result['voltasCompletadas'],
+                        'tempoTotal' => $result['tempoTotal'],
+                        'voltas' => $this->prepareVoltaData($result),
+                    ];
 
-                $preparedResults[] = $preparedResult;
+                    $preparedResults[] = $preparedResult;
+                }
             }
 
             return $preparedResults;
@@ -61,22 +65,32 @@ class RaceResultService
     }
 
     /**
-     * @param $laps
      * @return array
      */
-    protected function prepareVoltaData($laps): array
+    protected function prepareVoltaData($result): array
     {
-        $preparedVoltas = [];
 
-        foreach ($laps as $lap) {
-            $preparedVoltas[] = [
-                'numero' => $lap->numero,
-                'horaVolta' => $lap->horavolta,
-                'tempoVolta' => $lap->tempoVolta,
-                'velocidadeMedia' => $lap->velocidadeMedia,
-            ];
+        // Obtém o código do piloto do resultado
+        $pilotCode = $result['codigo'];
+
+        $raceResult = RaceResult::whereHas('pilot', function ($query) use ($pilotCode) {
+            $query->where('code', $pilotCode);
+        })->first();
+
+        if ($raceResult) {
+            $laps = $raceResult->lap;
+
+            $preparedLaps = [];
+
+            foreach ($laps as $lap) {
+                $preparedLaps[] = [
+                    'numero' => $lap->number,
+                    'horaVolta' => $lap->lapHour,
+                    'tempoVolta' => $lap->lapTime,
+                    'velocidadeMedia' => $lap->averageSpeed,
+                ];
+            }
+            return $preparedLaps;
         }
-
-        return $preparedVoltas;
     }
 }

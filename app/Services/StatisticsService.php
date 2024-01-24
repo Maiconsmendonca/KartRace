@@ -2,22 +2,69 @@
 
 namespace App\Services;
 
-use App\Models\RaceResult;
+
 use App\Models\Lap;
+use App\Models\Pilot;
+use App\Models\RaceResult;
+use App\Repository\LapRepository;
+use App\Repository\PilotRepository;
+use App\Repository\RaceResultRepository;
+use mysql_xdevapi\ExecutionStatus;
 
 /**
  * Class responsible for race statistics services
  */
 class StatisticsService
 {
-    /**
-     * @return null
-     */
+
+    protected PilotRepository $pilotRepository;
+    protected RaceResultRepository $raceResultRepository;
+    protected $lapRepository;
+
+    public function __construct(
+        PilotRepository $pilotRepository,
+        RaceResultRepository $raceResultRepository,
+        LapRepository $lapRepository
+    )
+    {
+        $this->pilotRepository = $pilotRepository;
+
+        $this->raceResultRepository = $raceResultRepository;
+
+        $this->lapRepository = $lapRepository;
+
+    }
+
     public function getBestLapOfTheRace()
     {
         try {
-            $bestLap = Lap::orderBy('tempoVolta')->first();
+            $bestLaps = [];
 
+            // Obtém todos os pilotos
+            $pilots = $this->pilotRepository->getAll();
+
+            foreach ($pilots as $pilot) {
+                // Obtém a melhor volta do piloto na corrida
+                $bestLap = Lap::whereHas('raceResult', function ($query) use ($pilot) {
+                    $query->where('piloto_id', $pilot->id);
+                })
+                    ->orderBy('tempoVolta', 'asc')
+                    ->first();
+
+                /*$bestLap = Lap::where('piloto_id', $pilot->id)
+                    ->orderBy('tempoVolta', 'asc')
+                    ->first();*/
+
+                if ($bestLap) {
+                    // Formata os dados e adiciona ao array
+                    $bestLaps[] = [
+                        'codigoPiloto' => $pilot->codigo,
+                        'nomePiloto' => $pilot->nomePiloto,
+                        'melhorTempo' => $bestLap->tempoVolta,
+                        'melhorVolta' => $bestLap->numero,
+                    ];
+                }
+            }
             return $bestLap;
         } catch (\Exception $e) {
             return null;
@@ -27,10 +74,15 @@ class StatisticsService
     /**
      * @return array|null
      */
-    public function getBestLapForEachPilot(): ?array
+    public function getBestLapForEachPilot()
     {
         try {
-            $pilots = RaceResult::with(['piloto', 'voltas'])->get();
+
+            $bestLaps = [];
+
+            $pilots = $this->lapRepository->getLap();
+
+            return $pilots;
 
             $bestLaps = [];
 
@@ -42,6 +94,7 @@ class StatisticsService
                 ];
             }
 
+            dd($bestLaps);
             return $bestLaps;
         } catch (\Exception $e) {
             return null;

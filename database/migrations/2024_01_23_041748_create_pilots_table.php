@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('voltas', function (Blueprint $table) {
+        Schema::create('pilots', function (Blueprint $table) {
             $table->id();
-            $table->integer('numero');
-            $table->string('horavolta');
-            $table->time('tempoVolta');
-            $table->float('velocidadeMedia');
-            $table->unsignedBigInteger('piloto_id');
-            $table->foreign('piloto_id')->references('id')->on('pilotos');
+            $table->string('code');
+            $table->string('pilotName');
             $table->timestamps();
         });
     }
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('voltas');
+        Schema::dropIfExists('pilots');
     }
 };

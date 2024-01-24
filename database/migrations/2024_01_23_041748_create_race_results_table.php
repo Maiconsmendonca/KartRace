@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('race_results', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo');
-            $table->string('nomePiloto');
-            $table->integer('voltasCompletadas');
-            $table->float('tempoTotal');
-            $table->integer('posicaoChegada')->nullable();
-            $table->unsignedBigInteger('piloto_id');
-            $table->foreign('piloto_id')->references('id')->on('pilotos');
+
+            $table->unsignedBigInteger('pilot_id');
+            $table->foreign('pilot_id')->references('id')->on('pilots');
+
+            $table->integer('lapsCompleted');
+            $table->float('totalTime');
+            $table->integer('finishingPosition')->nullable();
+
             $table->timestamps();
         });
     }

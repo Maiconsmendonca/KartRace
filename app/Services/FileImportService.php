@@ -34,10 +34,6 @@ class FileImportService
     {
         try {
             $this->processLogPilots($logFile);
-
-            //$this->processResultsRace();
-
-            //$this->insertInformationTurns();
         } catch (Exception $e) {
             throw $e;
         }
@@ -52,40 +48,32 @@ class FileImportService
     {
         $data = $this->extractData($logFile);
 
-        $timeReturn = $data['horaVolta'];
-        $code = $data['codigo'];
-        $pilotName = $data['nomePiloto'];
-        $lap = $data['volta'];
-        $timeLap = $data['tempoVolta'];
-        $averagespeed = $data['velocidadeVolta'];
+        $timeReturn = $data['lapHour'];
+        $code = $data['code'];
+        $pilotName = $data['pilotName'];
+        $lap = $data['lap'];
+        $timeLap = $data['lapTime'];
+        $averagespeed = $data['averageSpeed'];
 
-        $pilot = Pilot::firstOrCreate(['codigo' => $data['codigo']], ['nomePiloto' => $data['nomePiloto']]);
+        $pilot = Pilot::firstOrCreate(['code' => $data['code']], ['pilotName' => $data['pilotName']]);
+
+        $raceResult = RaceResult::firstOrCreate(['pilot_id' => $pilot->id], [
+            'pilot_id' => $pilot->id,
+            'lapsCompleted' => $lap,
+            'totalTime' => $this->timeForSeconds($data['lapTime']),
+            'finishingPosition' => $this->calculateArrivalPosition($pilot->id, $lap),
+        ]);
 
         $lapData = [
-            'numero' => $lap,
-            'horavolta' => $timeReturn,
-            'tempoVolta' => $this->formatTime($timeLap),
-            'velocidadeMedia' => $this->formatSpeed($averagespeed),
-            'piloto_id' => $pilot->id,
+            'number' => $lap,
+            'lapHour' => $timeReturn,
+            'lapTime' => $this->formatTime($timeLap),
+            'averageSpeed' => $this->formatSpeed($averagespeed),
+            'race_results_id' => $raceResult->id,
         ];
 
-        Lap::updateOrCreate(['numero' => $lap, 'piloto_id' => $pilot->id], $lapData);
+        Lap::updateOrCreate(['number' => $lap, 'race_results_id' => $raceResult->id], $lapData);
 
-        $resultRaceDate = [
-            'codigo' => $code,
-            'nomePiloto' => $pilotName,
-            'voltasCompletadas' => $lap,
-            'tempoTotal' => $this->timeForSeconds($data['tempoVolta']),
-            'posicaoChegada' => $this->calculateArrivalPosition($pilot->id, $lap),
-            'piloto_id' => $pilot->id,
-        ];
-
-        $raceResult = RaceResult::where('codigo', $code)->first();
-
-        if ($raceResult) {
-            $raceResult->update($resultRaceDate);
-        }
-        RaceResult::create($resultRaceDate);
     }
 
     /**
@@ -96,13 +84,6 @@ class FileImportService
     public function calculateArrivalPosition($pilotId, $lapsCompleted): int
     {
         return 0;
-    }
-
-    /**
-     * @return void
-     */
-    public function insertInformationTurns()
-    {
     }
 
     /**
@@ -117,12 +98,12 @@ class FileImportService
 
             if (count($lineData) >= 6) {
                 return [
-                    'horaVolta' => $lineData[0],
-                    'codigo' => $lineData[1],
-                    'nomePiloto' => $lineData[2],
-                    'volta' => $lineData[3],
-                    'tempoVolta' => $lineData[4],
-                    'velocidadeVolta' => $lineData[5],
+                    'lapHour' => $lineData[0],
+                    'code' => $lineData[1],
+                    'pilotName' => $lineData[2],
+                    'lap' => $lineData[3],
+                    'lapTime' => $lineData[4],
+                    'averageSpeed' => $lineData[5],
                 ];
             }
 
@@ -145,12 +126,12 @@ class FileImportService
 
             if ($raceResults->count() > 0) {
                 $totalSpeed = $raceResults->sum(function ($result) {
-                    return $result->voltas->avg('velocidadeMedia');
+                    return $result->laps->avg('averageSpeed');
                 });
 
                 $averageSpeed = $totalSpeed / $raceResults->count();
 
-                Log::info("Average speed for {$pilot->nomePiloto}: {$averageSpeed} km/h");
+                Log::info("Average speed for {$pilot->pilotName}: {$averageSpeed} km/h");
             }
         }
     }

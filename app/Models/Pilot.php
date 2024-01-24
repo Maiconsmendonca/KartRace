@@ -4,6 +4,7 @@ namespace App\Models;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
@@ -16,7 +17,7 @@ class Pilot extends Model
      * @var string[]
      */
     protected $fillable = [
-        'codigo', 'nomePiloto'
+        'code', 'pilotName'
     ];
 
     /**
@@ -24,6 +25,14 @@ class Pilot extends Model
      */
     public function raceResults(): HasMany
     {
-        return $this->hasMany(RaceResult::class);
+        return $this->hasMany(RaceResult::class, 'pilot_id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function lap(): HasMany
+    {
+        return $this->hasMany(Lap::class);
     }
 }

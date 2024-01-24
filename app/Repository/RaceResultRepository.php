@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Models\Lap;
 use App\Models\RaceResult;
 
 /**
@@ -19,10 +20,27 @@ class RaceResultRepository
     }
 
     /**
-     * @return mixed
+     * @return mixed'id'
      */
     public function getAll(): mixed
     {
-        return RaceResult::orderBy('posicaoChegada')->get();
+        $results = RaceResult::with('pilot')
+            ->orderBy('finishingPosition')
+            ->get();
+
+        $formattedResults = $results->map(function ($result) {
+            return [
+                'id' => $result->id,
+                'codigo' => $result->pilot->code,
+                'nomePiloto' => $result->pilot->pilotName,
+                'voltasCompletadas' => $result->lapsCompleted,
+                'tempoTotal' => $result->totalTime,
+                'posicaoChegada' => $result->finishingPosition,
+                'created_at' => $result->created_at,
+                'updated_at' => $result->updated_at,
+            ];
+        });
+
+        return ['resultados' => $formattedResults];
     }
 }
