@@ -9,6 +9,7 @@ use App\Models\RaceResult;
 use App\Repository\LapRepository;
 use App\Repository\PilotRepository;
 use App\Repository\RaceResultRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use mysql_xdevapi\ExecutionStatus;
 
@@ -17,15 +18,28 @@ use mysql_xdevapi\ExecutionStatus;
  */
 class StatisticsService
 {
-
+    /**
+     * @var PilotRepository
+     */
     protected PilotRepository $pilotRepository;
+    /**
+     * @var RaceResultRepository
+     */
     protected RaceResultRepository $raceResultRepository;
+    /**
+     * @var LapRepository
+     */
     protected LapRepository $lapRepository;
 
+    /**
+     * @param PilotRepository $pilotRepository
+     * @param RaceResultRepository $raceResultRepository
+     * @param LapRepository $lapRepository
+     */
     public function __construct(
-        PilotRepository $pilotRepository,
+        PilotRepository      $pilotRepository,
         RaceResultRepository $raceResultRepository,
-        LapRepository $lapRepository
+        LapRepository        $lapRepository
     )
     {
         $this->pilotRepository = $pilotRepository;
@@ -36,94 +50,82 @@ class StatisticsService
 
     }
 
-    public function getBestLapOfTheRace()
+    /**
+     * @return JsonResponse
+     */
+    public function getBestLapOfTheRace(): JsonResponse
     {
-        try {
-            $bestLaps = [];
+        $bestLap = Lap::orderBy('lapHour')->first();
 
-            // Obtém todos os pilotos
-            $pilots = $this->pilotRepository->getAll();
-
-            foreach ($pilots as $pilot) {
-                // Obtém a melhor volta do piloto na corrida
-                $bestLap = Lap::whereHas('raceResult', function ($query) use ($pilot) {
-                    $query->where('piloto_id', $pilot->id);
-                })
-                    ->orderBy('tempoVolta', 'asc')
-                    ->first();
-
-                /*$bestLap = Lap::where('piloto_id', $pilot->id)
-                    ->orderBy('tempoVolta', 'asc')
-                    ->first();*/
-
-                if ($bestLap) {
-                    // Formata os dados e adiciona ao array
-                    $bestLaps[] = [
-                        'codigoPiloto' => $pilot->codigo,
-                        'nomePiloto' => $pilot->nomePiloto,
-                        'melhorTempo' => $bestLap->tempoVolta,
-                        'melhorVolta' => $bestLap->numero,
-                    ];
-                }
-            }
-            return $bestLap;
-        } catch (\Exception $e) {
-            return null;
+        if ($bestLap) {
+            $bestLapData = [
+                'pilot_name' => $bestLap->raceResult->pilot->pilotName,
+                'lap_number' => $bestLap->number,
+                'lap_hour' => $bestLap->lapHour,
+                'best_time' => $bestLap->lapTime
+            ];
+        } else {
+            $bestLapData = null;
         }
+        return response()->json($bestLapData);
     }
 
     /**
-     * @return array|null
+     * @return JsonResponse
      */
-    public function getBestLapForEachPilot()
+    public function getBestLapForEachPilot(): JsonResponse
     {
-        try {
+        $pilots = Pilot::all();
 
-            $bestLaps = [];
+        $pilotsData = [];
 
-            $pilots = $this->lapRepository->getLap();
+        foreach ($pilots as $pilot) {
+            $bestLap = Lap::whereHas('raceResult', function ($query) use ($pilot) {
+                $query->where('pilot_id', $pilot->id);
+            })->orderBy('lapHour')->first();
 
-            return $pilots;
-
-            $bestLaps = [];
-
-            foreach ($pilots as $result) {
-                $fastestLap = $result->voltas->sortBy('tempoVolta')->first();
-                $bestLaps[] = [
-                    'piloto' => $result->piloto,
-                    'bestLap' => $fastestLap,
-                ];
+            if ($bestLap) {
+                $bestLapNumber = $bestLap->number;
+            } else {
+                $bestLapNumber = null;
             }
 
-            dd($bestLaps);
-            return $bestLaps;
-        } catch (\Exception $e) {
-            return null;
+            $pilotsData[] = [
+                'nome_piloto' => $pilot->pilotName,
+                'melhor_volta' => $bestLapNumber,
+            ];
         }
+
+        return response()->json($pilotsData);
     }
 
     /**
-     * @return array|null
+     * @return JsonResponse
      */
-    public function calculateAverageSpeedForEachPilot(): ?array
+    public function calculateAverageSpeedForEachPilot(): JsonResponse
     {
-        try {
-            $pilots = RaceResult::with(['piloto', 'voltas'])->get();
+        $pilots = Pilot::all();
 
-            $averageSpeeds = [];
+        $pilotsData = [];
 
-            foreach ($pilots as $result) {
-                $averageSpeed = $result->voltas->avg('velocidadeMedia');
-                $averageSpeeds[] = [
-                    'piloto' => $result->piloto,
-                    'averageSpeed' => $averageSpeed,
-                ];
+        foreach ($pilots as $pilot) {
+            $bestLap = Lap::whereHas('raceResult', function ($query) use ($pilot) {
+                $query->where('pilot_id', $pilot->id);
+            })->orderBy('lapHour')->first();
+
+            if ($bestLap) {
+                $bestTime = $bestLap->lapHour;
+            } else {
+                $bestTime = null;
             }
 
-            return $averageSpeeds;
-        } catch (\Exception $e) {
-            return null;
+            $pilotsData[] = [
+                'nome_piloto' => $pilot->pilotName,
+                'melhor_tempo' => $bestTime,
+            ];
         }
+
+        return response()->json($pilotsData);
     }
 
     /**
@@ -162,24 +164,5 @@ class StatisticsService
         $timeDifferences = $this->getTimeDifferenceFromWinnerForEachPilot();
 
         return compact('bestLaps', 'bestLapOfTheRace', 'averageSpeeds', 'timeDifferences');
-    }
-
-    protected function calculateStatistics(): void
-    {
-        $pilots = Pilot::all();
-
-        foreach ($pilots as $pilot) {
-            $raceResults = $pilot->raceResults;
-
-            if ($raceResults->count() > 0) {
-                $totalSpeed = $raceResults->sum(function ($result) {
-                    return $result->laps->avg('averageSpeed');
-                });
-
-                $averageSpeed = $totalSpeed / $raceResults->count();
-
-                Log::info("Average speed for {$pilot->pilotName}: {$averageSpeed} km/h");
-            }
-        }
     }
 }

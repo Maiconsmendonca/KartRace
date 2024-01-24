@@ -87,7 +87,7 @@ class RaceResultService
                     'numero' => $lap->number,
                     'horaVolta' => $lap->lapHour,
                     'tempoVolta' => $lap->lapTime,
-                    'velocidadeMedia' => $lap->averageSpeed,
+                    'velocidadeVolta' => $lap->lapSpeed,
                 ];
             }
             return $preparedLaps;

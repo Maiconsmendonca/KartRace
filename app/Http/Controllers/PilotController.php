@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Pilot;
 use Illuminate\Http\JsonResponse;
 
+/**
+ *
+ */
 class PilotController extends Controller
 {
     /**
@@ -36,6 +39,10 @@ class PilotController extends Controller
         }
     }
 
+    /**
+     * @param $pilotsResults
+     * @return array
+     */
     protected function formatResults($pilotsResults): array
     {
         return [

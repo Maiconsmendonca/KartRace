@@ -39,6 +39,10 @@ class RaceResultController extends Controller
         }
     }
 
+    /**
+     * @param $raceResults
+     * @return array
+     */
     protected function formatResults($raceResults): array
     {
         return [

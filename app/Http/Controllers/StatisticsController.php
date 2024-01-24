@@ -33,17 +33,24 @@ class StatisticsController extends Controller
         return response()->json($allRaceInformation);
     }
 
-    public function bestLapOfTheRace(): JsonResponse
+    /**
+     * @param $raceResults
+     * @return array
+     */
+    protected function formatResults($raceResults): array
     {
-        $allRaceInformation = $this->statisticsService->getBestLapOfTheRace();
-
-        return response()->json($allRaceInformation);
+        return [
+            'resultados' => $raceResults,
+        ];
     }
 
-    public function bestLapForEachPilot()
+    /**
+     * @return JsonResponse
+     */
+    public function averageSpeedForEachPilot(): JsonResponse
     {
         try {
-            $raceResults = $this->statisticsService->getBestLapForEachPilot();
+            $raceResults = $this->statisticsService->calculateAverageSpeedForEachPilot();
 
             $formattedResults = $this->formatResults($raceResults);
 
@@ -53,10 +60,37 @@ class StatisticsController extends Controller
         }
     }
 
-    protected function formatResults($raceResults): array
+    /**
+     * @return JsonResponse
+     */
+    public function bestLapForEachPilot(): JsonResponse
     {
-        return [
-            'resultados' => $raceResults,
-        ];
+        try {
+            $raceResults = $this->statisticsService->calculateAverageSpeedForEachPilot();
+
+            $formattedResults = $this->formatResults($raceResults);
+
+            return response()->json($formattedResults, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
+
+    /**
+     * @return JsonResponse
+     */
+    public function bestLapOfTheRace(): JsonResponse
+    {
+        try {
+            $raceResults = $this->statisticsService->getBestLapOfTheRace();
+
+            $formattedResults = $this->formatResults($raceResults);
+
+            return response()->json($formattedResults, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+    }
+
 }

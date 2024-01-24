@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('number');
             $table->string('lapHour');
             $table->time('lapTime');
-            $table->float('averageSpeed');
+            $table->string('lapSpeed');
             $table->unsignedBigInteger('race_results_id')->nullable();
             $table->foreign('race_results_id')->references('id')->on('race_results');
             $table->timestamps();

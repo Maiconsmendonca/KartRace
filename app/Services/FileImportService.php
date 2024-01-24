@@ -37,7 +37,6 @@ class FileImportService
         } catch (Exception $e) {
             throw $e;
         }
-
     }
 
     /**
@@ -53,7 +52,7 @@ class FileImportService
         $pilotName = $data['pilotName'];
         $lap = $data['lap'];
         $timeLap = $data['lapTime'];
-        $averagespeed = $data['averageSpeed'];
+        $lapSpeed = $data['averageSpeed'];
 
         $pilot = Pilot::firstOrCreate(['code' => $data['code']], ['pilotName' => $data['pilotName']]);
 
@@ -61,7 +60,7 @@ class FileImportService
             'pilot_id' => $pilot->id,
             'lapsCompleted' => $lap,
             'totalTime' => 0,
-            'finishingPosition' => $this->calculateArrivalPosition($pilot->id, $lap),
+            'finishingPosition' => 0,
         ]);
 
         $lastLap = Lap::where('race_results_id', $raceResult->id)->orderBy('number', 'desc')->first();
@@ -77,26 +76,14 @@ class FileImportService
             'number' => $lap,
             'lapHour' => $timeReturn,
             'lapTime' => $timeLap,
-            'averageSpeed' => $this->formatSpeed($averagespeed),
+            'lapSpeed' => $lapSpeed,
             'race_results_id' => $raceResult->id,
         ];
 
         Lap::updateOrCreate(['number' => $lap, 'race_results_id' => $raceResult->id], $lapData);
 
-        // Atualiza o número de voltas completadas no RaceResult
         $raceResult->lapsCompleted = $newLapNumber;
         $raceResult->save();
-
-    }
-
-    /**
-     * @param $pilotId
-     * @param $lapsCompleted
-     * @return int
-     */
-    public function calculateArrivalPosition($pilotId, $lapsCompleted): int
-    {
-        return 0;
     }
 
     /**
@@ -176,15 +163,6 @@ class FileImportService
         $timeParties = explode(':', $time);
 
         return sprintf('%02d:%02d:%06.3f', 0, $timeParties[0], $timeParties[1]);
-    }
-
-    /**
-     * @param $speed
-     * @return array|string|string[]
-     */
-    public function formatSpeed($speed): array|string
-    {
-        return str_replace(',', '.', $speed);
     }
 
 }

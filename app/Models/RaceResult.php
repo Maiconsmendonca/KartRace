@@ -15,7 +15,7 @@ class RaceResult extends Model
      * @var string[]
      */
     protected $fillable = [
-        'pilot_id', 'lapsCompleted', 'totalTime', 'finishingPosition'
+        'pilot_id', 'lapsCompleted', 'totalTime', 'finishingPosition', 'averageSpeed'
     ];
 
     /**
@@ -26,6 +26,9 @@ class RaceResult extends Model
         return $this->belongsTo(Pilot::class, 'pilot_id');
     }
 
+    /**
+     * @return HasMany
+     */
     public function lap(): HasMany
     {
         return $this->hasMany(Lap::class, 'race_results_id');

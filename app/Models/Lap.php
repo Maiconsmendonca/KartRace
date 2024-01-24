@@ -16,7 +16,7 @@ class Lap extends Model
      * @var string[]
      */
     protected $fillable = [
-        'number', 'lapHour', 'lapTime', 'averageSpeed', 'race_results_id'
+        'number', 'lapHour', 'lapTime', 'lapSpeed', 'race_results_id'
     ];
 
     /**

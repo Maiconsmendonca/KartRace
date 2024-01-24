@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('lapsCompleted');
             $table->integer('totalTime');
             $table->integer('finishingPosition')->nullable();
+            $table->string('averageSpeed')->nullable();
 
             $table->timestamps();
         });
