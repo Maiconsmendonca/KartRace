@@ -61,7 +61,7 @@ class FileImportService
             'pilot_id' => $pilot->id,
             'lapsCompleted' => $lap,
             'totalTime' => $this->timeForSeconds($data['lapTime']),
-            'finishingPosition' => $this->calculateArrivalPosition($pilot->id, $lap),
+            'finishingPosition' => 0,
         ]);
 
         $lapData = [
@@ -74,16 +74,6 @@ class FileImportService
 
         Lap::updateOrCreate(['number' => $lap, 'race_results_id' => $raceResult->id], $lapData);
 
-    }
-
-    /**
-     * @param $pilotId
-     * @param $lapsCompleted
-     * @return int
-     */
-    public function calculateArrivalPosition($pilotId, $lapsCompleted): int
-    {
-        return 0;
     }
 
     /**
@@ -117,24 +107,7 @@ class FileImportService
     /**
      * @return void
      */
-    protected function calculateStatistics(): void
-    {
-        $pilots = Pilot::all();
 
-        foreach ($pilots as $pilot) {
-            $raceResults = $pilot->raceResults;
-
-            if ($raceResults->count() > 0) {
-                $totalSpeed = $raceResults->sum(function ($result) {
-                    return $result->laps->avg('averageSpeed');
-                });
-
-                $averageSpeed = $totalSpeed / $raceResults->count();
-
-                Log::info("Average speed for {$pilot->pilotName}: {$averageSpeed} km/h");
-            }
-        }
-    }
 
     /**
      * @param $time

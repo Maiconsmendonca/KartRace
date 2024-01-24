@@ -9,6 +9,7 @@ use App\Models\RaceResult;
 use App\Repository\LapRepository;
 use App\Repository\PilotRepository;
 use App\Repository\RaceResultRepository;
+use Illuminate\Support\Facades\Log;
 use mysql_xdevapi\ExecutionStatus;
 
 /**
@@ -19,7 +20,7 @@ class StatisticsService
 
     protected PilotRepository $pilotRepository;
     protected RaceResultRepository $raceResultRepository;
-    protected $lapRepository;
+    protected LapRepository $lapRepository;
 
     public function __construct(
         PilotRepository $pilotRepository,
@@ -161,5 +162,24 @@ class StatisticsService
         $timeDifferences = $this->getTimeDifferenceFromWinnerForEachPilot();
 
         return compact('bestLaps', 'bestLapOfTheRace', 'averageSpeeds', 'timeDifferences');
+    }
+
+    protected function calculateStatistics(): void
+    {
+        $pilots = Pilot::all();
+
+        foreach ($pilots as $pilot) {
+            $raceResults = $pilot->raceResults;
+
+            if ($raceResults->count() > 0) {
+                $totalSpeed = $raceResults->sum(function ($result) {
+                    return $result->laps->avg('averageSpeed');
+                });
+
+                $averageSpeed = $totalSpeed / $raceResults->count();
+
+                Log::info("Average speed for {$pilot->pilotName}: {$averageSpeed} km/h");
+            }
+        }
     }
 }
