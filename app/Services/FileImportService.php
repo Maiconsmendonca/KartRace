@@ -61,7 +61,8 @@ class FileImportService
             'lapsCompleted' => $lap,
             'totalTime' => 0,
             'finishingPosition' => 0,
-            'lastLapTime' => 0
+            'lastLapTime' => 0,
+            'timeDifference' => 0
 
         ]);
 
@@ -91,9 +92,19 @@ class FileImportService
         $raceResult->lapsCompleted = $newLapNumber;
         $raceResult->save();
 
+        $this->calculateFinishingPosition();
+
+        $this->calculateTimeDifferenceAfterFirstPlace();
+    }
+
+    /**
+     * @return void
+     */
+    private function calculateFinishingPosition(): void
+    {
         $allPilots = Pilot::all();
 
-        $lastLaps = Lap::where('number', 4)->get(); // Supondo que a última volta seja a volta 4
+        $lastLaps = Lap::where('number', 4)->get();
 
         $position = 1;
 
@@ -122,6 +133,18 @@ class FileImportService
             }
         }
 
+        if ($position === 1 && $lap->number >= 4) {
+            $this->endRace();
+        }
+
+    }
+
+    /**
+     * @return void
+     */
+    private function endRace(): void
+    {
+        echo 'corrida finalizada';
     }
 
     /**
@@ -155,22 +178,22 @@ class FileImportService
     /**
      * @return void
      */
-    protected function calculateStatistics(): void
+    public function calculateTimeDifferenceAfterFirstPlace(): void
     {
-        $pilots = Pilot::all();
+        $firstPlace = RaceResult::where('finishingPosition', 1)->first();
+        $firstPlaceTotalTime = $firstPlace->totalTime;
 
-        foreach ($pilots as $pilot) {
-            $raceResults = $pilot->raceResults;
+        $raceResults = RaceResult::all();
 
-            if ($raceResults->count() > 0) {
-                $totalSpeed = $raceResults->sum(function ($result) {
-                    return $result->laps->avg('averageSpeed');
-                });
+        foreach ($raceResults as $result) {
+            $resultTotalTime = $result->totalTime;
 
-                $averageSpeed = $totalSpeed / $raceResults->count();
+            $timeDifferenceInMillis = $resultTotalTime - $firstPlaceTotalTime;
 
-                Log::info("Average speed for {$pilot->pilotName}: {$averageSpeed} km/h");
-            }
+            $formattedTimeDifference = convert_milessimos_to_mm_ss_nnn($timeDifferenceInMillis);
+
+            $result->timeDifference = $formattedTimeDifference;
+            $result->save();
         }
     }
 

@@ -36,6 +36,7 @@ class RaceResultRepository
                 'voltasCompletadas' => $result->lapsCompleted,
                 'tempoTotal' => $result->totalTime,
                 'posicaoChegada' => $result->finishingPosition,
+                'tempoDiferencaPrimeiro' => $result->timeDifference,
                 'created_at' => $result->created_at,
                 'updated_at' => $result->updated_at,
             ];

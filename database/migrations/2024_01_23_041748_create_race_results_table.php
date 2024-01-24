@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('finishingPosition')->nullable();
             $table->string('averageSpeed')->nullable();
             $table->string('lastLapTime');
+            $table->string('timeDifference');
 
             $table->timestamps();
         });
