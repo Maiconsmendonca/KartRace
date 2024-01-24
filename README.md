@@ -72,6 +72,12 @@ ___
 ## How to access APi Routes and Endpoints
 
 ```
+    To add a file to postman, go to body, insert a key with the file name
+    and click on search for file, after selecting the file click on Send 
+    and the entire log will be inserted in the database and with all the
+    race information available.
+
+
     // Input the .log file
     {{BASE_URL}}/api/process-log
     
