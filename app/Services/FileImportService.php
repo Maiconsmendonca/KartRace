@@ -64,6 +64,10 @@ class FileImportService
             'finishingPosition' => $this->calculateArrivalPosition($pilot->id, $lap),
         ]);
 
+        $lastLap = Lap::where('race_results_id', $raceResult->id)->orderBy('number', 'desc')->first();
+
+        $newLapNumber = $lastLap ? $lastLap->number + 1 : 1;
+
         $NewLapTime = convert_time_to_milessimos($data['lapTime']);
         $currentTotalTime = $raceResult['totalTime'] + $NewLapTime;
 
@@ -78,6 +82,10 @@ class FileImportService
         ];
 
         Lap::updateOrCreate(['number' => $lap, 'race_results_id' => $raceResult->id], $lapData);
+
+        // Atualiza o número de voltas completadas no RaceResult
+        $raceResult->lapsCompleted = $newLapNumber;
+        $raceResult->save();
 
     }
 
