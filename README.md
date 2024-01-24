@@ -47,6 +47,9 @@ ___
 - [x] List how long each driver arrived after first place
 - [x] List all race information
 - [x] Separate every project into classes
+- [x] Insert Repositories and create validation rules and queries
+- [x] Creation of endpoints
+- [x] Validation of pilot data
 
 ___
 
@@ -86,6 +89,9 @@ ___
     
     // All driver and race information
     {{BASE_URL}}/api/all-race-information
+    
+    //All Pilots
+    {{BASE.URL}}/api/pilot-results
 ```
 
 ___
@@ -112,12 +118,6 @@ ___
 
 ## Next Steps
 
-- [ ] Insert Repositories and create validation rules and queries
-- [ ] Creation of endpoints
-- [ ] Validation of pilot data
+Fish steps
 
 ___
-
-## **Extra information**
-
-{c:red} There is a class in the project which is called fileImporControllerOld.php this class is a class that was created only to think and develop the logic of the project, it is not the final class nor the finished project, the project is being developed from this logic. {/c}

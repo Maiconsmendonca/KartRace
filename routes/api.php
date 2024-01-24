@@ -28,5 +28,4 @@ Route::get('/race-results', [RaceResultController::class, 'index']);
 Route::get('/best-lap-for-each-pilot', [StatisticsController::class, 'bestLapForEachPilot']);
 Route::get('/best-lap-of-the-race', [StatisticsController::class, 'bestLapOfTheRace']);
 Route::get('/average-speed-for-each-pilot', [StatisticsController::class, 'averageSpeedForEachPilot']);
-Route::get('/time-difference-from-winner-for-each-pilot', [StatisticsController::class, 'timeDifferenceFromWinnerForEachPilot']);
 Route::get('/all-race-information', [StatisticsController::class, 'allRaceInformation']);
